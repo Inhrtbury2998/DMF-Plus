@@ -3,6 +3,7 @@
 1.Qmsg来自message.js库
 */
 const DEBUG = true;
+const PATH = "DMF-Plus-main/";
 
 /**
  * 转换坐标点数组
@@ -182,9 +183,6 @@ function loadImage(src) {
     });
 }
 
-
-
-
 /**
  * 获取字符串中最后一个指定字符之前的部分
  * 该函数接收一个字符串和一个字符，然后返回从字符串开头到该字符最后一次出现位置(含指定字符)的子字符串。
@@ -204,4 +202,20 @@ function getLastPartOfString(str, char) {
         // 如果没有找到指定字符，则返回null
         return null;
     }
+}
+/**
+ * 复制给定的源 canvas 元素并返回一个新的 canvas 元素。
+ *
+ * @param {HTMLCanvasElement} sourceCanvas - 要复制的源 canvas 元素。
+ * @returns {HTMLCanvasElement} 复制后的目标 canvas 元素，具有与源 canvas 相同的宽度和高度。
+ */
+function copyCanvas(sourceCanvas) {
+    let targetCanvas = document.createElement('canvas');
+    targetCanvas.width = sourceCanvas.width;
+    targetCanvas.height = sourceCanvas.height;
+
+    const targetCtx = targetCanvas.getContext('2d');
+    targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+    targetCtx.drawImage(sourceCanvas, 0, 0);
+    return targetCanvas;
 }

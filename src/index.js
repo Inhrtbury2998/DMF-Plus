@@ -29,19 +29,21 @@ $(document).ready(function () {
 
 
     //利用绝对路径和index.html与utils.js的路径关系得到map-big.png与utils.js的路径关系
-    let mapBigSrc = getLastPartOfString(window.location.href, "DMF/") + 'src/assets/images/map-big.png';
-    let croppedCanvas = cropImage(mapBigSrc);
-    if(!croppedCanvas)
+    let mapBigSrc = getLastPartOfString(window.location.href, PATH) + 'src/assets/images/map-big.png';
+    cropImage(mapBigSrc).then(canvas => {
+        console.log(canvas);
+        if(!canvas)
         console.error("croppedCanvas should not be null or undefined");
-    console.log(croppedCanvas);
-        // 将裁剪后的canvas添加到DOM中显示
-        // $('.imageCalculate').children().append(croppedCanvas).css({
-        //     "width": $(croppedCanvas).width() / 8 + "px",
-        //     "height": $(croppedCanvas).height() / 8 + "px"
-        // });
-        // $(".imgSmallSpan > canvas").css({
-        //     "width": "100%",
-        //     "height": "100%"
-        // })
+        //将裁剪后的canvas添加到DOM中显示
+        $('.imageCalculate').children().css({
+            "width": canvas.width / 8 + "px",
+            "height": canvas.height / 8 + "px"
+        })
+        $(".imgSmallSpan").append(canvas);
+        $(".imgBigSpan").append(copyCanvas(canvas));
+        $(".imgSmallSpan > canvas").css({
+            "width": "100%",
+            "height": "100%"
+        });
+    }).catch(error => console.error(error));
 });
-
