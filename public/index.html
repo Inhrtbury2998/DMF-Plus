@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMF龙日辅助程序</title>
+    <!-- 检测浏览器版本是否过旧，用src导入会导致IE浏览器直接报错，放index.js里等不到调用到就会报错 -->
+    <script>
+        (function () {
+            var userAgent = navigator.userAgent;
+            var browserName = "";
+            var browserVersion = "";
+
+            // 检测浏览器类型和版本
+            if (userAgent.indexOf("Firefox") > -1) {
+                browserName = "Firefox";
+                browserVersion = userAgent.match(/Firefox\/(\d+)/)[1];
+            } else if (userAgent.indexOf("Chrome") > -1 && userAgent.indexOf("Edge") == -1) {
+                browserName = "Chrome";
+                browserVersion = userAgent.match(/Chrome\/(\d+)/)[1];
+            } else if (userAgent.indexOf("Safari") > -1 && userAgent.indexOf("Chrome") == -1) {
+                browserName = "Safari";
+                browserVersion = userAgent.match(/Version\/(\d+)/)[1];
+            } else if (userAgent.indexOf("Trident") > -1) {
+                browserName = "IE";
+                browserVersion = userAgent.match(/rv:(\d+)/)[1];
+            } else if (userAgent.indexOf("Edge") > -1) {
+                browserName = "Edge";
+                browserVersion = userAgent.match(/Edge\/(\d+)/)[1];
+            }
+
+            // 判断浏览器版本是否过旧
+            var isOutdated = false;
+            if (browserName === "IE") {
+                isOutdated = true;
+            } else if (browserName === "Firefox" && parseInt(browserVersion) < 60) {
+                isOutdated = true;
+            } else if (browserName === "Chrome" && parseInt(browserVersion) < 70) {
+                isOutdated = true;
+            } else if (browserName === "Safari" && parseInt(browserVersion) < 12) {
+                isOutdated = true;
+            } else if (browserName === "Edge" && parseInt(browserVersion) < 79) {
+                isOutdated = true;
+            }
+
+            if (isOutdated) {
+                if (confirm("您的浏览器版本过旧，无法保证程序的正常运行。是否跳转至现代浏览器下载界面")) {
+                    window.location.href = "./low_browser.html";
+                }
+            }
+        })();
+    </script>
+    <!-- jq导入 -->
+    <script src="../lib/jquery.min.js"></script>
+    <!-- message提示框组件 -->
+    <link rel="stylesheet" href="../lib/message/message.min.css">
+    <script src="../lib/message/message.min.js"></script>
+    <!-- 主css样式表 -->
+    <link rel="stylesheet" href="../src/assets/styles/main.css">
+</head>
+
+<body>
+    <div class="imageCalculate">
+        <span class="imgBigSpan"></span>
+        <span class="imgSmallSpan"></span>
+    </div>
+    <div class="lieCalculate">
+    <label for="y1">点1的y坐标:</label>
+    <input type="text" id="y1" placeholder="输入y1" value="0">
+    <label for="x1">点1的x坐标:</label>
+    <input type="text" id="x1" placeholder="输入x1" value="0">
+
+    <label for="y2">点2的y坐标:</label>
+    <input type="text" id="y2" placeholder="输入y2" value="100">
+    <label for="x2">点2的x坐标:</label>
+    <input type="text" id="x2" placeholder="输入x2" value="-100">
+
+    <button id="calculateButton">计算距离</button>
+
+    <p id="result"></p>
+</div>
+</body>
+<!-- js工具文件 -->
+<script src="../src/utils/utils.js"></script>
+<!-- 主js程序 -->
+<script src="../src/index.js"></script>
+
+</html>

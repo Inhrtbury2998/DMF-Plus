@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    const image = new Image();
+    image.src = 'https://cdn-docs-new.pingcode.com/baike/wp-content/uploads/2024/09/667eba0c-34d9-4484-bb74-55a2bb4a726b.webp';
+
+    const body = document.querySelector("body");
+    image.onload = function () {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        // 设置Canvas宽高与图片一致
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.drawImage(image, 0, 0);
+        // 裁剪区域参数
+        const startX = 50; // 裁剪区域起始X坐标
+        const startY = 50; // 裁剪区域起始Y坐标
+        const width = 200; // 裁剪区域宽度
+        const height = 200; // 裁剪区域高度
+        // 创建一个新的Canvas用于存放裁剪后的图片
+        const croppedCanvas = document.createElement('canvas');
+        body.append(croppedCanvas);
+        const croppedCtx = croppedCanvas.getContext('2d');
+        // 设置新的Canvas大小
+        croppedCanvas.width = width;
+        croppedCanvas.height = height;
+        // 将裁剪区域绘制到新的Canvas上
+        croppedCtx.drawImage(
+            canvas,
+            startX, startY, width, height,
+            0, 0, width, height
+        );
+    };
+</script>
+
+</html>
