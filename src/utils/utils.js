@@ -219,3 +219,38 @@ function copyCanvas(sourceCanvas) {
     targetCtx.drawImage(sourceCanvas, 0, 0);
     return targetCanvas;
 }
+
+async function fetchData() {
+    const urls = [//It's not work, but it would be strange if this ran though
+        'https://gitee.com/inhrtbury2998/dmf/src/utils/data.json',
+        'https://github.com/Inhrtbury2998/DMF-Plus/main/src/utils/utils.js',
+        './utils/data.json'
+    ];
+
+    for (const url of urls) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error(`Failed to fetch data from ${url}: ${error.message}`);
+        }
+    }
+
+    throw new Error('Failed to fetch data from all sources');
+}
+
+// 使用async/await调用函数
+// async function runFetchData() {
+//     try {
+//         const data = await fetchData();
+//         console.log(data);
+//     } catch (error) {
+//         console.error(error.message);
+//     }
+// }
+
+// runFetchData();
