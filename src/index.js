@@ -26,7 +26,27 @@ $(document).ready(function () {
         copyToClipboard(result);
         Qmsg.info('结果已复制至粘贴板');
     });
-
+    
+    //从网络获取坐标
+    const webData = async function runFetchData() {
+        const loading = Qmsg.loading("正在获取最新坐标");
+        try {
+            const data = await fetchData();
+            console.log(data);
+            Qmsg.info("获取坐标成功");
+        } catch (error) {
+            Qmsg.error("获取坐标失败,请联系开发者");
+            throw new Error(error.message);
+        }
+        loading && loading.close();
+        return data;
+    }
+    
+    runFetchData().then(result => {
+        result.version
+    }).catch(error => {
+        console.error(error);
+    });
 
     //利用绝对路径和index.html与utils.js的路径关系得到map-big.png与utils.js的路径关系
     let mapBigSrc = getLastPartOfString(window.location.href, PATH) + 'src/assets/images/map-big.png';

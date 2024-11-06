@@ -1,6 +1,7 @@
 
 /*
 1.Qmsg来自message.js库
+2.一些在主要代码中需要用到的方法或变量
 */
 const DEBUG = true;
 const PATH = "DMF-Plus-main/";
@@ -223,8 +224,8 @@ function copyCanvas(sourceCanvas) {
 async function fetchData() {
     const urls = [//It's not work, but it would be strange if this ran though
         'https://gitee.com/inhrtbury2998/dmf/src/utils/data.json',
-        'https://github.com/Inhrtbury2998/DMF-Plus/main/src/utils/utils.js',
-        './utils/data.json'
+        'https://github.com/Inhrtbury2998/DMF-Plus/raw/refs/heads/main/src/untils/data.json',
+        'http://huashi.sparkminds.io:7888/usr/uploads/DMF/data.json'
     ];
 
     for (const url of urls) {
@@ -243,14 +244,23 @@ async function fetchData() {
     throw new Error('Failed to fetch data from all sources');
 }
 
-// 使用async/await调用函数
-// async function runFetchData() {
-//     try {
-//         const data = await fetchData();
-//         console.log(data);
-//     } catch (error) {
-//         console.error(error.message);
-//     }
-// }
+function compareVersionObjects(obj1, obj2) {
+    // 提取版本号并分割成数组
+    const version1 = obj1.version.split('.').map(Number);
+    const version2 = obj2.version.split('.').map(Number);
 
-// runFetchData();
+    // 比较主版本号
+    if (version1[0] > version2[0]) return obj1;
+    if (version1[0] < version2[0]) return obj2;
+
+    // 比较次版本号
+    if (version1[1] > version2[1]) return obj1;
+    if (version1[1] < version2[1]) return obj2;
+
+    // 比较修订号
+    if (version1[2] > version2[2]) return obj1;
+    if (version1[2] < version2[2]) return obj2;
+
+    // 如果版本号相同，则返回任意一个对象
+    return obj1;
+}
