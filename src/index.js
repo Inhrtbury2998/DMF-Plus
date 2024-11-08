@@ -29,17 +29,28 @@ $(document).ready(function () {
     
     //从网络获取坐标
     const webData = async function runFetchData() {
-        const loading = Qmsg.loading("正在获取最新坐标");
-        try {
-            const data = await fetchData();
-            console.log(data);
-            Qmsg.info("获取坐标成功");
-        } catch (error) {
-            Qmsg.error("获取坐标失败,请联系开发者");
-            throw new Error(error.message);
+        if (navigator.onLine){
+            const loading = Qmsg.loading("正在获取最新坐标");
+            try {
+                const webdata = await fetchData();
+                Qmsg.info("获取坐标成功");
+                if (!localStorage.length || webdata.version > localStorage.getItem("localStorage").version){
+                    localStorage.clear();
+                    localStorage.setItem("localStorage" , webdata);
+                }
+                loading && loading.close();
+                return webdata;
+            } catch (error) {
+                Qmsg.error("获取坐标失败,使用本地坐标,请联系开发者");
+
+                const data = Object.keys(localStorage)?
+                Object.keys(localStorage).json():
+                await fetch("./utils/data.json").json();
+
+                loading && loading.close();
+                return data;
+            }
         }
-        loading && loading.close();
-        return data;
     }
     
     runFetchData().then(result => {

@@ -225,7 +225,7 @@ async function fetchData() {
     const urls = [//It's not work, but it would be strange if this ran though
         'https://gitee.com/inhrtbury2998/dmf/src/utils/data.json',
         'https://github.com/Inhrtbury2998/DMF-Plus/raw/refs/heads/main/src/untils/data.json',
-        'http://huashi.sparkminds.io:7888/usr/uploads/DMF/data.json'
+        'http://huashi.sparkminds.io:7888/usr/uploads/DMF/data.json',
     ];
 
     for (const url of urls) {
