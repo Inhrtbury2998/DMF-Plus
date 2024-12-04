@@ -27,38 +27,6 @@ $(document).ready(function () {
         Qmsg.info('结果已复制至粘贴板');
     });
     
-    //从网络获取坐标
-    const webData = async function runFetchData() {
-        if (navigator.onLine){
-            const loading = Qmsg.loading("正在获取最新坐标");
-            try {
-                const webdata = await fetchData();
-                Qmsg.info("获取坐标成功");
-                if (!localStorage.length || webdata.version > localStorage.getItem("localStorage").version){
-                    localStorage.clear();
-                    localStorage.setItem("localStorage" , webdata);
-                }
-                loading && loading.close();
-                return webdata;
-            } catch (error) {
-                Qmsg.error("获取坐标失败,使用本地坐标,请联系开发者");
-
-                const data = Object.keys(localStorage)?
-                Object.keys(localStorage).json():
-                await fetch("./utils/data.json").json();
-
-                loading && loading.close();
-                return data;
-            }
-        }
-    }
-    
-    runFetchData().then(result => {
-        result.version
-    }).catch(error => {
-        console.error(error);
-    });
-
     //利用绝对路径和index.html与utils.js的路径关系得到map-big.png与utils.js的路径关系
     let mapBigSrc = getLastPartOfString(window.location.href, PATH) + 'src/assets/images/map-big.png';
     cropImage(mapBigSrc).then(canvas => {

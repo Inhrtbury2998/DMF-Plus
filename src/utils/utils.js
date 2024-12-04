@@ -221,29 +221,6 @@ function copyCanvas(sourceCanvas) {
     return targetCanvas;
 }
 
-async function fetchData() {
-    const urls = [//It's not work, but it would be strange if this ran though
-        'https://gitee.com/inhrtbury2998/dmf/src/utils/data.json',
-        'https://github.com/Inhrtbury2998/DMF-Plus/raw/refs/heads/main/src/untils/data.json',
-        'http://huashi.sparkminds.io:7888/usr/uploads/DMF/data.json',
-    ];
-
-    for (const url of urls) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error(`Failed to fetch data from ${url}: ${error.message}`);
-        }
-    }
-
-    throw new Error('Failed to fetch data from all sources');
-}
-
 function compareVersionObjects(obj1, obj2) {
     // 提取版本号并分割成数组
     const version1 = obj1.version.split('.').map(Number);
