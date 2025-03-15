@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片放大镜</title>
+    <style>
+        /* 原有样式保持不变 */
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .original {
+            position: relative;
+            width: 500px;
+            height: 350px;
+            border: 1px solid #ccc;
+        }
+
+        .original img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .zoom-box {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid #fff;
+            display: none;
+        }
+
+        .zoomed {
+            width: 500px;
+            height: 350px;
+            border: 1px solid #ccc;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .zoomed img {
+            position: absolute;
+            left: 0;
+            top: 0;
+            max-width: none;
+            max-height: none;
+        }
+
+        /* 新增点样式 */
+        .dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            /* 中心点对准 */
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="original" id="original">
+            <img src="https://picsum.photos/800/600" alt="原始图片">
+            <div class="zoom-box" id="zoomBox"></div>
+        </div>
+        <div class="zoomed" id="zoomed">
+            <img src="https://picsum.photos/800/600" alt="放大图片" id="zoomedImg">
+        </div>
+    </div>
+
+    <script>
+        // 原有代码保持不变
+        function imageMagnifier(
+        original = document.getElementById('original'),
+        zoomBox = document.getElementById('zoomBox'),
+        zoomedImg = document.getElementById('zoomedImg'),
+        zoomed = document.getElementById('zoomed'),
+        zoomLevel = 2){
+
+            let isReady = false;
+
+        original.querySelector('img').onload = function () {
+            zoomedImg.style.width = `${this.naturalWidth * zoomLevel}px`;
+            zoomedImg.style.height = `${this.naturalHeight * zoomLevel}px`;
+            isReady = true;
+        };
+
+        // 新增点击处理逻辑
+        let clickState = 0;
+        let redDot = { x: null, y: null };
+        let blueDot = { x: null, y: null };
+
+        original.addEventListener('click', (e) => {
+            if (!isReady) return;
+
+            const img = original.querySelector('img');
+            const rect = original.getBoundingClientRect();
+            const [scale, offsetX, offsetY] = getImageTransformData(img);
+
+            // 计算实际显示坐标
+            const displayX = (e.clientX - rect.left - offsetX) / scale;
+            const displayY = (e.clientY - rect.top - offsetY) / scale;
+
+            // 转换为容器内坐标
+            const containerX = displayX * scale + offsetX;
+            const containerY = displayY * scale + offsetY;
+
+            // 更新状态并处理点
+            switch (clickState) {
+                case 0:
+                    createDot(containerX, containerY, 'red');
+                    redDot = { x: displayX, y: displayY };
+                    clickState = 1;
+                    break;
+                case 1:
+                    createDot(containerX, containerY, 'blue');
+                    blueDot = { x: displayX, y: displayY };
+                    clickState = 2;
+                    break;
+                case 2:
+                    clearDots();
+                    clickState = 0;
+                    break;
+            }
+        });
+
+        function getImageTransformData(img) {
+            // 计算图片的缩放和偏移量
+            const containerWidth = original.offsetWidth;
+            const containerHeight = original.offsetHeight;
+            const imgRatio = img.naturalWidth / img.naturalHeight;
+            const containerRatio = containerWidth / containerHeight;
+
+            let scale, offsetX = 0, offsetY = 0;
+
+            if (imgRatio > containerRatio) {
+                scale = containerHeight / img.naturalHeight;
+                const scaledWidth = img.naturalWidth * scale;
+                offsetX = (containerWidth - scaledWidth) / 2;
+            } else {
+                scale = containerWidth / img.naturalWidth;
+                const scaledHeight = img.naturalHeight * scale;
+                offsetY = (containerHeight - scaledHeight) / 2;
+            }
+
+            return [scale, offsetX, offsetY];
+        }
+        }
+        
+
+        function createDot(x, y, color) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.style.backgroundColor = color;
+            dot.style.left = `${x}px`;  // 直接使用容器坐标
+            dot.style.top = `${y}px`;   // 直接使用容器坐标
+            original.appendChild(dot);
+        }
+
+        function clearDots() {
+            const dots = original.querySelectorAll('.dot');
+            dots.forEach(dot => dot.remove());
+        }
+
+        // 原有事件监听保持不变
+
+    </script>
+</body>
+
+</html>
