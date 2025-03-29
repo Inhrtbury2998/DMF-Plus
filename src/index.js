@@ -26,13 +26,13 @@ $(document).ready(function () {
         copyToClipboard(result);
         Qmsg.info('结果已复制至粘贴板');
     });
-    
+
     //利用绝对路径和index.html与utils.js的路径关系得到map-big.png与utils.js的路径关系
-    let mapBigSrc = getLastPartOfString(window.location.href, PATH) + 'src/assets/images/map-big.png';
+    const mapBigSrc = getLastPartOfString(window.location.href, PATH) + 'src/assets/images/map-big.png';
     cropImage(mapBigSrc).then(canvas => {
         console.log(canvas);
-        if(!canvas)
-        console.error("croppedCanvas should not be null or undefined");
+        if (!canvas)
+            console.error("croppedCanvas should not be null or undefined");
         //将裁剪后的canvas添加到DOM中显示
         $('.imageCalculate').children().css({
             "width": canvas.width / 8 + "px",
@@ -43,6 +43,23 @@ $(document).ready(function () {
         $(".imgSmallSpan > canvas").css({
             "width": "100%",
             "height": "100%"
+        });
+
+        const bigCanvasWidth = parseFloat($('.imgBigSpan > canvas').css('width'));
+        const zoomLevel = bigCanvasWidth / parseFloat($('.imgBigSpan').css('width'));
+        $('.imgSmallSpan').mousemove((event) => {
+
+            console.log(zoomLevel);
+            // 使用链式操作+解构赋值一次性获取尺寸
+            const { offsetX: x, offsetY: y } = event;
+            const [w, h] = [$(event.currentTarget).width(), $(event.currentTarget).height()];
+
+            $('.imgBigSpan > canvas').css({
+                'transform': `translate(
+                    ${-(x - w / 2) * zoomLevel - bigCanvasWidth / 2 + 128}px,
+                    ${-(y - h / 2) * zoomLevel - bigCanvasWidth / 2 + 128}px
+                )`
+            });
         });
     }).catch(error => console.error(error));
 });
