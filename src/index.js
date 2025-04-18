@@ -56,8 +56,8 @@ $(document).ready(function () {
 
             $('.imgBigSpan > canvas').css({
                 'transform': `translate(
-                    ${-(x - w / 2) * zoomLevel - bigCanvasWidth / 2 + 128}px,
-                    ${-(y - h / 2) * zoomLevel - bigCanvasWidth / 2 + 128}px
+                    ${-(x - w / 2) * zoomLevel - bigCanvasWidth / 2 + 120}px,
+                    ${-(y - h / 2) * zoomLevel - bigCanvasWidth / 2 + 120}px
                 )`
             });
         });
