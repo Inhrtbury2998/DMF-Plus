@@ -87,5 +87,92 @@ $(document).ready(function () {
         )`
             });
         });
+
+         // 地图点击获取坐标并标记
+    let clickState = 0; // 0:未选，1:已选起点，2:已选终点
+    let startMarker = null, endMarker = null;
+    let startCoord = null, endCoord = null;
+    const mapLogicWidth = 1500; // 地图逻辑坐标宽度（根据地图实际标注调整）
+    const mapLogicHeight = 1500; // 地图逻辑坐标高度（根据地图实际标注调整）
+
+    function pixelToLogic(x, y, mapWidth, mapHeight) {
+        // 像素坐标转逻辑坐标，左上为(0,0)
+        // 逻辑坐标x:东西，y:南北
+        let logicX = (x / mapWidth) * mapLogicWidth;
+        let logicY = (y / mapHeight) * mapLogicHeight;
+        // 方向后缀，假设地图左为西，右为东，上为北，下为南
+        let xDir = logicX < mapLogicWidth / 2 ? 'w' : 'e';
+        let yDir = logicY < mapLogicHeight / 2 ? 'n' : 's';
+        let xVal = Math.abs(logicX - mapLogicWidth / 2).toFixed(1);
+        let yVal = Math.abs(logicY - mapLogicHeight / 2).toFixed(1);
+        return { x: xVal + xDir, y: yVal + yDir };
+    }
+
+    $('.imgSmallSpan').off('click').on('click', function (e) {
+        // 获取点击坐标相对于图像容器的位置
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // 获取canvas实际显示尺寸和原始像素尺寸的缩放比例
+        const canvas = $(this).find('canvas')[0];
+        if (!canvas) return;
+
+        const mapWidth = canvas.width;  // 原始宽度
+        const mapHeight = canvas.height; // 原始高度
+        const displayWidth = $(canvas).width();  // 显示宽度
+        const displayHeight = $(canvas).height(); // 显示高度
+
+        // 计算实际坐标（考虑缩放）
+        const scaleX = mapWidth / displayWidth;
+        const scaleY = mapHeight / displayHeight;
+        const px = x * scaleX;
+        const py = y * scaleY;
+
+        // 转换为逻辑坐标
+        const coord = pixelToLogic(px, py, mapWidth, mapHeight);
+
+        // 根据当前状态更新UI
+        if (clickState === 0) {
+            // 设置起点
+            startCoord = coord;
+            $('#y1').val(coord.y);
+            $('#x1').val(coord.x);
+            if (startMarker) startMarker.remove();
+            startMarker = $('<div class="map-marker start-marker"></div>');
+            startMarker.css({
+                left: x - 7 + 'px',
+                top: y - 7 + 'px'
+            });
+            $(this).append(startMarker);
+            clickState = 1;
+        } else if (clickState === 1) {
+            // 设置终点
+            endCoord = coord;
+            $('#y2').val(coord.y);
+            $('#x2').val(coord.x);
+            if (endMarker) endMarker.remove();
+            endMarker = $('<div class="map-marker end-marker"></div>');
+            endMarker.css({
+                left: x - 7 + 'px',
+                top: y - 7 + 'px'
+            });
+            $(this).append(endMarker);
+            clickState = 2;
+        } else {
+            // 重置
+            if (startMarker) startMarker.remove();
+            if (endMarker) endMarker.remove();
+            startMarker = null;
+            endMarker = null;
+            startCoord = null;
+            endCoord = null;
+            clickState = 0;
+            $('#y1').val('');
+            $('#x1').val('');
+            $('#y2').val('');
+            $('#x2').val('');
+        }
+    });
     }).catch(error => Qmsg.error('地图图片加载失败: ' + error));
 });

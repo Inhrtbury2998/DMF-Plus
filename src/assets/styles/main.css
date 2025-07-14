@@ -210,3 +210,32 @@ input:checked + .slider:before {
 .help-content li {
     margin-bottom: 8px;
 }
+
+
+/* 地图标记点样式 */
+.imageCalculate {
+    position: relative;
+}
+
+.imgSmallSpan {
+    position: relative;
+}
+
+.map-marker {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.start-marker {
+    background: #2196f3;
+    box-shadow: 0 0 8px #2196f3;
+}
+
+.end-marker {
+    background: #ff3b3b;
+    box-shadow: 0 0 8px #ff3b3b;
+}

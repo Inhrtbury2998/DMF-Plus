@@ -219,3 +219,18 @@ function copyCanvas(sourceCanvas) {
     targetCtx.drawImage(sourceCanvas, 0, 0);
     return targetCanvas;
 }
+
+// 检查输入值是否有效
+function isValidInput(value) {
+    // 检查是否为空
+    if (!value) return false;
+    
+    // 去除前后空格并转为小写方便检查
+    const trimmedValue = $.trim(value).toLowerCase();
+    
+    // 匹配数字+w/e/s/n格式（不区分大小写）
+    const directionPattern = /^-?\d+(\.\d+)?[wens]$/;
+    
+    // 如果是纯数字（整数或浮点数）或符合方向格式，则返回true
+    return !isNaN(trimmedValue) || directionPattern.test(trimmedValue);
+}
