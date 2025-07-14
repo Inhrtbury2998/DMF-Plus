@@ -31,14 +31,17 @@ $(document).ready(function () {
     // 绑定点击事件到按钮
     $('#calculateButton').click(function () {
         // 获取输入的坐标
-        let y1 = parseFloat($.trim($('#y1').val()));
-        let x1 = parseFloat($.trim($('#x1').val()));
-        let x2 = parseFloat($.trim($('#x2').val()));
-        let y2 = parseFloat($.trim($('#y2').val()));
-        //经纬度转换为直角坐标系下坐标，地图原点为原点
-        if (y1 && y2 && x1 && x2) {
+        let y1 = $('#y1').val();
+        let x1 = $('#x1').val();
+        let x2 = $('#x2').val();
+        let y2 = $('#y2').val();
+        // 检查输入是否有效
+        if (!(isValidCoordinateString(y1) && isValidCoordinateString(y2) 
+            && isValidCoordinateString(x1) && isValidCoordinateString(x2))) {
             Qmsg.error('请输入正确的数据');
+            return;
         }
+        //经纬度转换为直角坐标系下坐标，地图原点为原点
         let transformLie = convertCoordinates([[y1, x1], [y2, x2]]);
         // 计算两点之间的距离
         let distance = Math.sqrt(Math.pow(transformLie[0][1] - transformLie[1][1], 2) + Math.pow(transformLie[0][0] - transformLie[1][0], 2));

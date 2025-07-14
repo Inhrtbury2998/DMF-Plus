@@ -14,42 +14,51 @@ const PATH = "DMF-Plus-main/";
  * @returns {number[][]} 转换后的经纬度数组
  */
 function convertCoordinates(pointArray) {
-    return pointArray.map((point) => {
-        // 解构赋值提取纬度和经度的字符串
-        let [latStr, lonStr] = point;
-
-        // 尝试将纬度和经度直接转换为数字
-        let latNum = parseFloat(latStr);
-        let lonNum = parseFloat(lonStr);
-
-        // 检查转换是否成功，如果成功，则直接使用这些数字
-        if (!isNaN(latNum) && !isNaN(lonNum)) {
-            return [latNum, lonNum];
-        }
-
-        // 如果转换失败，尝试使用正则表达式匹配数字部分，包括小数点
-        let latMatch = latStr.match(/[-+]?\d+(\.\d+)?/);
-        let lonMatch = lonStr.match(/[-+]?\d+(\.\d+)?/);
-
-        // 如果正则表达式匹配失败，则抛出错误
-        if (!latMatch || !lonMatch) {
-            Qmsg.error('请输入正确的数据');
-            throw new Error('Invalid coordinate format');
-        }
-
-        // 将匹配到的字符串转换为浮点数
-        latNum = parseFloat(latMatch[0]);
-        lonNum = parseFloat(lonMatch[0]);
-
-        // 根据纬度和经度的符号调整数值的正负
-        let latSign = latStr.includes('S') || latStr.includes('s') ? -1 : 1;
-        let lonSign = lonStr.includes('W') || lonStr.includes('w') ? -1 : 1;
-
-        // 返回转换后的纬度和经度数组
-        return [latNum * latSign, lonNum * lonSign];
+return pointArray.map(function(point) {
+        return point.map(function(coord) {
+            // 如果已经是数字，直接返回
+            if (typeof coord === 'number') {
+                return coord;
+            }
+            
+            // 转为字符串处理
+            const str = String(coord).trim();
+            const lastChar = str.slice(-1).toLowerCase();
+            
+            // 检查最后一个字符是否是方向标识
+            if (/[nsew]/.test(lastChar)) {
+                const numPart = parseFloat(str.slice(0, -1));
+                switch(lastChar) {
+                    case 's': // 南纬为负
+                    case 'w': // 西经为负
+                        return -numPart;
+                    case 'n': // 北纬为正
+                    case 'e': // 东经为正
+                        return numPart;
+                }
+            }
+            
+            // 没有方向标识，直接转为数字
+            return parseFloat(str);
+        });
     });
 }
 
+/**
+ * 检测字符串是否为有效的经纬度格式（数字 + 可选方向标识 N/S/E/W）
+ * @param {string} str - 待检测的字符串
+ * @returns {boolean} - 是否符合格式要求
+ * @example
+ * isValidCoordinateString("200.3w") // true
+ * isValidCoordinateString("34.1E")  // true
+ * isValidCoordinateString("40")     // true
+ * isValidCoordinateString("40X")   // false
+ * isValidCoordinateString("N40")   // false
+ */
+function isValidCoordinateString(str) {
+    // 检查是否为数字（可能带正负号）或数字后跟 N/S/E/W（不区分大小写）
+    return /^[-+]?\d*\.?\d+[nsew]?$/i.test(str);
+}
 
 /**
  * 将文本复制到剪贴板
