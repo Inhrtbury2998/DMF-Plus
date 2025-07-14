@@ -61,26 +61,66 @@
 </head>
 
 <body>
-    <div class="imageCalculate">
-        <span class="imgSmallSpan"></span>
-        <span class="imgBigSpan"></span>
+    <nav class="sidebar">
+        <div class="sidebar-header">DMF-Plus</div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item active" data-section="main">主界面</li>
+            <li class="sidebar-item" data-section="settings">设置</li>
+            <li class="sidebar-item" data-section="help">帮助</li>
+        </ul>
+    </nav>
+    <div class="main-content">
+        <div class="main-section section" data-section="main">
+            <div class="imageCalculate">
+                <span class="imgSmallSpan"></span>
+                <span class="imgBigSpan"></span>
+            </div>
+            <div class="lieCalculate">
+                <label for="y1">点1的y坐标:</label>
+                <input type="text" id="y1" placeholder="输入y1" value="0">
+                <label for="x1">点1的x坐标:</label>
+                <input type="text" id="x1" placeholder="输入x1" value="0">
+
+                <label for="y2">点2的y坐标:</label>
+                <input type="text" id="y2" placeholder="输入y2" value="100">
+                <label for="x2">点2的x坐标:</label>
+                <input type="text" id="x2" placeholder="输入x2" value="-100">
+
+                <button id="calculateButton">计算距离</button>
+
+                <p id="result"></p>
+            </div>
+            <div class="easyCalculate"></div>
+        </div>
+        <div class="settings-section section" data-section="settings" style="display:none;">
+            <h2>设置</h2>
+            <div class="setting-item">
+                <label class="switch">
+                    <input type="checkbox" id="autoCopySwitch">
+                    <span class="slider"></span>
+                </label>
+                <span>计算后自动复制结果到粘贴板</span>
+            </div>
+            <!-- 可快速新增其它开关设置 -->
+            <div class="setting-actions">
+                <button id="applySettings">应用设置</button>
+                <button id="resetSettings">重置设置</button>
+            </div>
+        </div>
+        <div class="help-section section" data-section="help" style="display:none;">
+            <h2>帮助与教程</h2>
+            <div class="help-content">
+                <ol>
+                    <li>输入两个点的坐标，点击“计算距离”按钮，程序会自动计算两点间距离和方向。</li>
+                    <li>如需自动复制结果到粘贴板，可在“设置”界面开启相关开关。</li>
+                    <li>支持地图图片裁剪与放大缩小操作，鼠标移动可查看细节。</li>
+                    <li>如遇异常或报错，请刷新页面或检查输入格式。</li>
+                    <li>更多功能和开关可在“设置”界面快速添加。</li>
+                </ol>
+                <p>如有疑问或建议，请联系开发者。</p>
+            </div>
+        </div>
     </div>
-    <div class="lieCalculate">
-        <label for="y1">点1的y坐标:</label>
-        <input type="text" id="y1" placeholder="输入y1" value="0">
-        <label for="x1">点1的x坐标:</label>
-        <input type="text" id="x1" placeholder="输入x1" value="0">
-
-        <label for="y2">点2的y坐标:</label>
-        <input type="text" id="y2" placeholder="输入y2" value="100">
-        <label for="x2">点2的x坐标:</label>
-        <input type="text" id="x2" placeholder="输入x2" value="-100">
-
-        <button id="calculateButton">计算距离</button>
-
-        <p id="result"></p>
-    </div>
-    <div class="easyCalculate"></div>
 </body>
 <!-- js工具文件 -->
 <script src="../src/utils/utils.js"></script>

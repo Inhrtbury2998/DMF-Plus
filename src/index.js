@@ -3,6 +3,31 @@
 
 // })
 $(document).ready(function () {
+    // 侧边栏切换逻辑
+    $('.sidebar-item').click(function () {
+        $('.sidebar-item').removeClass('active');
+        $(this).addClass('active');
+        var section = $(this).data('section');
+        $('.section').hide();
+        $('[data-section="' + section + '"]').show();
+    });
+
+    // 设置界面逻辑
+    // 读取设置（本地存储）
+    let autoCopy = localStorage.getItem('autoCopy') === 'true';
+    $('#autoCopySwitch').prop('checked', autoCopy);
+
+    $('#applySettings').click(function () {
+        autoCopy = $('#autoCopySwitch').prop('checked');
+        localStorage.setItem('autoCopy', autoCopy);
+        Qmsg.success('设置已保存');
+    });
+    $('#resetSettings').click(function () {
+        $('#autoCopySwitch').prop('checked', false);
+        localStorage.setItem('autoCopy', false);
+        Qmsg.info('设置已重置');
+    });
+
     // 绑定点击事件到按钮
     $('#calculateButton').click(function () {
         // 获取输入的坐标
@@ -23,17 +48,20 @@ $(document).ready(function () {
         // 显示结果
         let result = '距离：' + distance.toFixed(2) + '\n方向：' + degrees + "°";
         $('#result').text(result);
-        copyToClipboard(result);
-        Qmsg.info('结果已复制至粘贴板');
+        // 判断设置是否自动复制
+        if (localStorage.getItem('autoCopy') === 'true') {
+            copyToClipboard(result);
+            Qmsg.info('结果已复制至粘贴板');
+        }
     });
 
-    //利用绝对路径和index.html与utils.js的路径关系得到map-big.png与utils.js的路径关系
-    const mapBigSrc = getLastPartOfString(window.location.href, PATH) + 'src/assets/images/map-big.png';
+    // 修正图片裁剪异常
+    const mapBigSrc = '../src/assets/images/map-big.png';
     cropImage(mapBigSrc).then(canvas => {
-        console.log(canvas);
-        if (!canvas)
-            console.error("croppedCanvas should not be null or undefined");
-        //将裁剪后的canvas添加到DOM中显示
+        if (!canvas) {
+            Qmsg.error('地图图片加载失败，请检查路径或刷新页面');
+            return;
+        }
         $('.imageCalculate').children().css({
             "width": canvas.width / 8 + "px",
             "height": canvas.height / 8 + "px"
@@ -48,18 +76,16 @@ $(document).ready(function () {
         const bigCanvasWidth = parseFloat($('.imgBigSpan > canvas').css('width'));
         const zoomLevel = bigCanvasWidth / parseFloat($('.imgBigSpan').css('width'));
         $('.imgSmallSpan').mousemove((event) => {
-
-            console.log(zoomLevel);
-            // 使用链式操作+解构赋值一次性获取尺寸
             const { offsetX: x, offsetY: y } = event;
-            const [w, h] = [$(event.currentTarget).width(), $(event.currentTarget).height()];
+            const bigWidth = $('.imgBigSpan').width();
+            const bigHeight = $('.imgBigSpan').height();
 
             $('.imgBigSpan > canvas').css({
                 'transform': `translate(
-                    ${-(x - w / 2) * zoomLevel - bigCanvasWidth / 2 + 120}px,
-                    ${-(y - h / 2) * zoomLevel - bigCanvasWidth / 2 + 120}px
-                )`
+            ${-x * zoomLevel + bigWidth / 2}px,
+            ${-y * zoomLevel + bigHeight / 2}px
+        )`
             });
         });
-    }).catch(error => console.error(error));
+    }).catch(error => Qmsg.error('地图图片加载失败: ' + error));
 });

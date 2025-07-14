@@ -62,7 +62,6 @@ function copyToClipboard(text) {
     if (navigator.clipboard) {
         // 使用 async 函数和 then() 方法确保操作完成后再继续
         navigator.clipboard.writeText(text).then(function () {
-            // 复制成功的回调函数，这里注释掉了日志输出
             // console.log('Async: Copying to clipboard was successful!');
         }, function (err) {
             // 复制失败的错误处理函数，打印错误信息并显示错误消息
@@ -219,25 +218,4 @@ function copyCanvas(sourceCanvas) {
     targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
     targetCtx.drawImage(sourceCanvas, 0, 0);
     return targetCanvas;
-}
-
-function compareVersionObjects(obj1, obj2) {
-    // 提取版本号并分割成数组
-    const version1 = obj1.version.split('.').map(Number);
-    const version2 = obj2.version.split('.').map(Number);
-
-    // 比较主版本号
-    if (version1[0] > version2[0]) return obj1;
-    if (version1[0] < version2[0]) return obj2;
-
-    // 比较次版本号
-    if (version1[1] > version2[1]) return obj1;
-    if (version1[1] < version2[1]) return obj2;
-
-    // 比较修订号
-    if (version1[2] > version2[2]) return obj1;
-    if (version1[2] < version2[2]) return obj2;
-
-    // 如果版本号相同，则返回任意一个对象
-    return obj1;
 }
