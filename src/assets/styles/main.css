@@ -239,3 +239,96 @@ input:checked + .slider:before {
     background: #ff3b3b;
     box-shadow: 0 0 8px #ff3b3b;
 }
+
+/* 下拉框样式 */
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.location-dropdown {
+  position: relative;
+  margin-bottom: 6px;
+}
+
+.dropdown-button {
+  background: #23242a;
+  color: #ff8800;
+  border: 1px solid #282a36;
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.dropdown-button:hover {
+  background: #282a36;
+  transform: scale(1.02);
+}
+
+.dropdown-button::after {
+  content: '▼';
+  position: absolute;
+  right: 12px;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+/* 只旋转下拉箭头的样式 */
+.dropdown-button.dropdown-open::after {
+  transform: rotate(180deg);
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: #23242a;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  margin-top: 2px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.dropdown-content.show {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  color: #f5f6fa;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: #282a36;
+  color: #ff8800;
+}
+
+/* 页面切换动画 */
+.section {
+  opacity: 1;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.section.fade-out {
+  opacity: 0;
+}
+
+.section.fade-in {
+  opacity: 1;
+}
+

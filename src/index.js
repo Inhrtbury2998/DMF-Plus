@@ -3,30 +3,145 @@
 
 // })
 $(document).ready(function () {
-    // 侧边栏切换逻辑
+    // 导入预设位置信息
+    import('../src/data.js')
+        .then(module => {
+            const EASYINPUT = module.EASYINPUT;
+            // 初始化下拉菜单
+            initDropdowns(EASYINPUT);
+        })
+        .catch(error => {
+            console.error('加载位置数据失败:', error);
+            Qmsg.error('加载位置数据失败，请刷新页面重试');
+        });
+
+    // 侧边栏切换逻辑（添加动画）
     $('.sidebar-item').click(function () {
         $('.sidebar-item').removeClass('active');
         $(this).addClass('active');
         var section = $(this).data('section');
-        $('.section').hide();
-        $('[data-section="' + section + '"]').show();
+
+        // 添加淡出动画
+        $('.section:visible').addClass('fade-out');
+
+        setTimeout(() => {
+            $('.section').hide().removeClass('fade-out');
+            const $targetSection = $('[data-section="' + section + '"]');
+            $targetSection.show().addClass('fade-in');
+
+            setTimeout(() => {
+                $targetSection.removeClass('fade-in');
+            }, 200);
+        }, 200);
     });
+
+    // 初始化下拉菜单
+    function initDropdowns(locations) {
+        // 生成下拉选项
+        const $startOptions = $('#startLocationOptions');
+        const $endOptions = $('#endLocationOptions');
+
+        // 清空现有选项
+        $startOptions.empty();
+        $endOptions.empty();
+
+        // 添加选项
+        for (const key in locations) {
+            if (locations.hasOwnProperty(key)) {
+                const location = locations[key];
+
+                // 为起点下拉框添加选项
+                const $startItem = $('<div class="dropdown-item" data-id="' + location.id + '">' + location.name + '</div>');
+                $startItem.on('click', function() {
+                    // 设置起点坐标
+                    $('#y1').val(location.lie[0]);
+                    $('#x1').val(location.lie[1]);
+                    // 关闭下拉框
+                    $('#startLocationOptions').removeClass('show');
+                    // 更新按钮文本
+                    $('#startLocationDropdown .dropdown-button').text(location.name);
+                });
+                $startOptions.append($startItem);
+
+                // 为终点下拉框添加选项
+                const $endItem = $('<div class="dropdown-item" data-id="' + location.id + '">' + location.name + '</div>');
+                $endItem.on('click', function() {
+                    // 设置终点坐标
+                    $('#y2').val(location.lie[0]);
+                    $('#x2').val(location.lie[1]);
+                    // 关闭下拉框
+                    $('#endLocationOptions').removeClass('show');
+                    // 更新按钮文本
+                    $('#endLocationDropdown .dropdown-button').text(location.name);
+                });
+                $endOptions.append($endItem);
+            }
+        }
+
+        // 下拉框切换逻辑
+        $('.dropdown-button').on('click', function(e) {
+            e.stopPropagation();
+            const $content = $(this).siblings('.dropdown-content');
+
+            // 关闭所有其他下拉框
+            $('.dropdown-content').not($content).removeClass('show');
+
+            // 切换当前下拉框
+            $content.toggleClass('show');
+
+            // 如果打开，只旋转箭头(三角形)而不是整个按钮
+            if ($content.hasClass('show')) {
+                $(this).find('::after').css('transform', 'rotate(180deg)');
+                // 使用CSS类控制三角形旋转
+                $(this).addClass('dropdown-open');
+            } else {
+                $(this).find('::after').css('transform', '');
+                // 移除CSS类
+                $(this).removeClass('dropdown-open');
+            }
+        });
+
+        // 点击页面其他位置关闭下拉框
+        $(document).on('click', function() {
+            $('.dropdown-content').removeClass('show');
+            $('.dropdown-button').removeClass('dropdown-open');
+        });
+    }
 
     // 设置界面逻辑
     // 读取设置（本地存储）
     let autoCopy = localStorage.getItem('autoCopy') === 'true';
     $('#autoCopySwitch').prop('checked', autoCopy);
 
+    // 简繁转换设置
+    let zhConvert = localStorage.getItem('zhConvert') === 'true';
+    $('#zhConvertSwitch').prop('checked', zhConvert);
+
     $('#applySettings').click(function () {
         autoCopy = $('#autoCopySwitch').prop('checked');
         localStorage.setItem('autoCopy', autoCopy);
+        zhConvert = $('#zhConvertSwitch').prop('checked');
+        localStorage.setItem('zhConvert', zhConvert);
         Qmsg.success('设置已保存');
+        if (zhConvert) {
+            convertPageToTraditional();
+        } else {
+            convertPageToSimplified();
+        }
     });
     $('#resetSettings').click(function () {
         $('#autoCopySwitch').prop('checked', false);
         localStorage.setItem('autoCopy', false);
+        $('#zhConvertSwitch').prop('checked', false);
+        localStorage.setItem('zhConvert', false);
         Qmsg.info('设置已重置');
+        convertPageToSimplified();
     });
+
+    // 页面加载时根据设置自动转换
+    if (zhConvert) {
+        convertPageToTraditional();
+    }
 
     // 绑定点击事件到按钮
     $('#calculateButton').click(function () {

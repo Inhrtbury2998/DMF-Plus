@@ -1,10 +1,55 @@
+/**
+ * 简繁转换工具（仅常用字，支持页面整体转换）
+ * 依赖简繁映射表，可根据需要扩展
+ */
+const zh_s2t_map = {
+    "龙": "龍", "辅助": "輔助", "设置": "設置", "帮助": "幫助", "教程": "教程", "地图": "地圖", "宽度": "寬度", "高度": "高度", "起点": "起點", "终点": "終點", "坐标": "座標", "计算": "計算", "距离": "距離", "方向": "方向", "重置": "重置", "保存": "保存", "刷新": "刷新", "图片": "圖片", "裁剪": "裁剪", "异常": "異常", "粘贴板": "剪貼板", "更多": "更多", "功能": "功能", "快速": "快速", "新增": "新增", "开关": "開關", "主界面": "主界面", "自动": "自動", "复制": "複製", "结果": "結果", "失败": "失敗", "成功": "成功", "显示": "顯示", "输入": "輸入", "数据": "數據", "刷新": "刷新", "点": "點", "南": "南", "北": "北", "西": "西", "东": "東"
+    // 可继续补充常用字
+};
+
+function zh_s2t(str) {
+    return str.replace(/[\u4e00-\u9fa5]/g, function (char) {
+        return zh_s2t_map[char] || char;
+    });
+}
+
+function zh_t2s(str) {
+    // 反向映射
+    const t2s_map = Object.fromEntries(Object.entries(zh_s2t_map).map(([k, v]) => [v, k]));
+    return str.replace(/[\u4e00-\u9fa5]/g, function (char) {
+        return t2s_map[char] || char;
+    });
+}
+
+/**
+ * 页面整体简繁转换（简转繁）
+ */
+function convertPageToTraditional() {
+    traverseAndConvert(document.body, zh_s2t);
+}
+
+/**
+ * 页面整体简繁转换（繁转简）
+ */
+function convertPageToSimplified() {
+    traverseAndConvert(document.body, zh_t2s);
+}
+
+function traverseAndConvert(node, convertFunc) {
+    if (node.nodeType === 3) { // 文本节点
+        node.nodeValue = convertFunc(node.nodeValue);
+    } else if (node.nodeType === 1 && node.childNodes) {
+        for (let i = 0; i < node.childNodes.length; i++) {
+            traverseAndConvert(node.childNodes[i], convertFunc);
+        }
+    }
+}
 
 /*
 1.Qmsg来自message.js库
 2.一些在主要代码中需要用到的方法或变量
 */
 const DEBUG = true;
-const PATH = "DMF-Plus-main/";
 
 /**
  * 转换坐标点数组
@@ -193,26 +238,6 @@ function loadImage(src) {
 }
 
 /**
- * 获取字符串中最后一个指定字符之前的部分
- * 该函数接收一个字符串和一个字符，然后返回从字符串开头到该字符最后一次出现位置(含指定字符)的子字符串。
- * 如果字符串中不存在该字符，则返回null。
- * @param {string} str - 需要处理的原始字符串
- * @param {string} char - 需要查找的字符
- * @returns {string|null} 从字符串开头到指定字符最后一次出现位置的子字符串，如果未找到则返回null
- */
-function getLastPartOfString(str, char) {
-    // 找到最后一个指定字符的位置
-    let lastIndex = str.lastIndexOf(char) + char.length;
-
-    // 如果找到了指定字符，则截取从该位置到字符串末尾的部分
-    if (lastIndex !== -1) {
-        return str.slice(0, lastIndex);
-    } else {
-        // 如果没有找到指定字符，则返回null
-        return null;
-    }
-}
-/**
  * 复制给定的源 canvas 元素并返回一个新的 canvas 元素。
  *
  * @param {HTMLCanvasElement} sourceCanvas - 要复制的源 canvas 元素。
@@ -227,19 +252,4 @@ function copyCanvas(sourceCanvas) {
     targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
     targetCtx.drawImage(sourceCanvas, 0, 0);
     return targetCanvas;
-}
-
-// 检查输入值是否有效
-function isValidInput(value) {
-    // 检查是否为空
-    if (!value) return false;
-    
-    // 去除前后空格并转为小写方便检查
-    const trimmedValue = $.trim(value).toLowerCase();
-    
-    // 匹配数字+w/e/s/n格式（不区分大小写）
-    const directionPattern = /^-?\d+(\.\d+)?[wens]$/;
-    
-    // 如果是纯数字（整数或浮点数）或符合方向格式，则返回true
-    return !isNaN(trimmedValue) || directionPattern.test(trimmedValue);
 }

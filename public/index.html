@@ -76,18 +76,31 @@
                 <span class="imgBigSpan"></span>
             </div>
             <div class="lieCalculate">
-                <label for="y1">点1的y坐标:</label>
+                <label for="y1">起点的y坐标:</label>
                 <input type="text" id="y1" placeholder="输入y1" value="0">
                 <label for="x1">点1的x坐标:</label>
                 <input type="text" id="x1" placeholder="输入x1" value="0">
-
+                <div class="dropdown-container">
+                    <div class="location-dropdown" id="startLocationDropdown">
+                        <button class="dropdown-button">选择起点</button>
+                        <div class="dropdown-content" id="startLocationOptions">
+                            <!-- 这里将由JS动态生成选项 -->
+                        </div>
+                    </div>
+                </div>
                 <label for="y2">点2的y坐标:</label>
                 <input type="text" id="y2" placeholder="输入y2" value="100">
                 <label for="x2">点2的x坐标:</label>
                 <input type="text" id="x2" placeholder="输入x2" value="-100">
-
+                <div class="dropdown-container">
+                    <div class="location-dropdown" id="endLocationDropdown">
+                        <button class="dropdown-button">选择终点</button>
+                        <div class="dropdown-content" id="endLocationOptions">
+                            <!-- 这里将由JS动态生成选项 -->
+                        </div>
+                    </div>
+                </div>
                 <button id="calculateButton">计算距离</button>
-
                 <p id="result"></p>
             </div>
             <div class="easyCalculate"></div>
@@ -100,6 +113,13 @@
                     <span class="slider"></span>
                 </label>
                 <span>计算后自动复制结果到粘贴板</span>
+            </div>
+            <div class="setting-item">
+                <label class="switch">
+                    <input type="checkbox" id="zhConvertSwitch">
+                    <span class="slider"></span>
+                </label>
+                <span>界面简繁转换</span>
             </div>
             <!-- 可快速新增其它开关设置 -->
             <div class="setting-actions">
