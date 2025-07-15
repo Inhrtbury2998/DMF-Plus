@@ -210,21 +210,6 @@ $(document).ready(function () {
     let clickState = 0; // 0:未选，1:已选起点，2:已选终点
     let startMarker = null, endMarker = null;
     let startCoord = null, endCoord = null;
-    const mapLogicWidth = 1500; // 地图逻辑坐标宽度（根据地图实际标注调整）
-    const mapLogicHeight = 1500; // 地图逻辑坐标高度（根据地图实际标注调整）
-
-    function pixelToLogic(x, y, mapWidth, mapHeight) {
-        // 像素坐标转逻辑坐标，左上为(0,0)
-        // 逻辑坐标x:东西，y:南北
-        let logicX = (x / mapWidth) * mapLogicWidth;
-        let logicY = (y / mapHeight) * mapLogicHeight;
-        // 方向后缀，假设地图左为西，右为东，上为北，下为南
-        let xDir = logicX < mapLogicWidth / 2 ? 'w' : 'e';
-        let yDir = logicY < mapLogicHeight / 2 ? 'n' : 's';
-        let xVal = Math.abs(logicX - mapLogicWidth / 2).toFixed(1);
-        let yVal = Math.abs(logicY - mapLogicHeight / 2).toFixed(1);
-        return { x: xVal + xDir, y: yVal + yDir };
-    }
 
     $('.imgSmallSpan').off('click').on('click', function (e) {
         // 获取点击坐标相对于图像容器的位置
@@ -251,6 +236,7 @@ $(document).ready(function () {
         const coord = pixelToLogic(px, py, mapWidth, mapHeight);
 
         // 根据当前状态更新UI
+        // 点击地图时的起点和终点小圆
         if (clickState === 0) {
             // 设置起点
             startCoord = coord;

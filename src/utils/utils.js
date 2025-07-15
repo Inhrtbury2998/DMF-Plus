@@ -167,7 +167,7 @@ function degreesReadability(degrees) {
             degrees = "N偏W" + (degrees - 90).toFixed(1);
         } else {
             // 如果角度在0到90度之间，转换为“N偏E”格式
-            degrees = "N偏E" + degrees.toFixed(1);
+            degrees = "N偏E" + (90 - degrees).toFixed(1);
         }
     } else {
         // 如果角度小于-90度，转换为“S偏W”格式
@@ -175,7 +175,7 @@ function degreesReadability(degrees) {
             degrees = "S偏W" + Math.abs(degrees + 90).toFixed(1);
         } else {
             // 如果角度在-90到0度之间，转换为“S偏E”格式
-            degrees = "S偏E" + Math.abs(degrees).toFixed(1);
+            degrees = "S偏E" + Math.abs(degrees + 90).toFixed(1);
         }
     }
 
@@ -253,3 +253,30 @@ function copyCanvas(sourceCanvas) {
     targetCtx.drawImage(sourceCanvas, 0, 0);
     return targetCanvas;
 }
+
+    const mapLogicWidth = 1500; // 地图逻辑坐标宽度（根据地图实际标注调整）
+    const mapLogicHeight = 1500; // 地图逻辑坐标高度（根据地图实际标注调整）
+
+    /**
+     * 将像素坐标转换为逻辑坐标。
+     * 
+     * @param {number} x - 像素坐标的 x 值。
+     * @param {number} y - 像素坐标的 y 值。
+     * @param {number} mapWidth - 地图的像素宽度。
+     * @param {number} mapHeight - 地图的像素高度。
+     * @returns {Object} 包含逻辑坐标的对象，格式为 { x: 'xValxDir', y: 'yValyDir' }，
+     *                   其中 xVal 和 yVal 是逻辑坐标的绝对值（保留一位小数），
+     *                   xDir 和 yDir 是方向后缀（'w' 代表西，'e' 代表东，'n' 代表北，'s' 代表南）。
+     */
+    function pixelToLogic(x, y, mapWidth, mapHeight) {
+        // 像素坐标转逻辑坐标，左上为(0,0)
+        // 逻辑坐标x:东西，y:南北
+        let logicX = (x / mapWidth) * mapLogicWidth;
+        let logicY = (y / mapHeight) * mapLogicHeight;
+        // 方向后缀，地图上北下南左西右东
+        let xDir = logicX < mapLogicWidth / 2 ? 'w' : 'e';
+        let yDir = logicY < mapLogicHeight / 2 ? 'n' : 's';
+        let xVal = Math.abs(logicX - mapLogicWidth / 2).toFixed(1);
+        let yVal = Math.abs(logicY - mapLogicHeight / 2).toFixed(1);
+        return { x: xVal + xDir, y: yVal + yDir };
+    }

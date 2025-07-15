@@ -65,6 +65,7 @@
         <div class="sidebar-header">DMF-Plus</div>
         <ul class="sidebar-menu">
             <li class="sidebar-item active" data-section="main">主界面</li>
+            <li class="sidebar-item" data-section="genetic">遗传预测</li>
             <li class="sidebar-item" data-section="settings">设置</li>
             <li class="sidebar-item" data-section="help">帮助</li>
         </ul>
@@ -78,7 +79,7 @@
             <div class="lieCalculate">
                 <label for="y1">起点的y坐标:</label>
                 <input type="text" id="y1" placeholder="输入y1" value="0">
-                <label for="x1">点1的x坐标:</label>
+                <label for="x1">起点的x坐标:</label>
                 <input type="text" id="x1" placeholder="输入x1" value="0">
                 <div class="dropdown-container">
                     <div class="location-dropdown" id="startLocationDropdown">
@@ -88,9 +89,9 @@
                         </div>
                     </div>
                 </div>
-                <label for="y2">点2的y坐标:</label>
+                <label for="y2">终点的y坐标:</label>
                 <input type="text" id="y2" placeholder="输入y2" value="100">
-                <label for="x2">点2的x坐标:</label>
+                <label for="x2">终点的x坐标:</label>
                 <input type="text" id="x2" placeholder="输入x2" value="-100">
                 <div class="dropdown-container">
                     <div class="location-dropdown" id="endLocationDropdown">
@@ -138,6 +139,403 @@
                     <li>更多功能和开关可在“设置”界面快速添加。</li>
                 </ol>
                 <p>如有疑问或建议，请联系开发者。</p>
+            </div>
+        </div>
+        <div class="genetic-section section" data-section="genetic" style="display:none;">
+            <!-- 通知栏 -->
+            <!-- <div class="notification card-hover">
+                <div class="notification-content">
+                    <div class="notification-icon fa-check-circle"></div>
+                    <p>综合评分bug已修复</p>
+                </div>
+            </div> -->
+
+            <!-- 计算器主体 -->
+            <div class="calculator bg-gradient">
+                <!-- 快速填入区域 -->
+                <div class="quick-input">
+                    <p class="quick-input-label">
+                        快速填入数据(当均填入数据时以快速填入区域数据为准，支持仅一方填入数据)
+                    </p>
+                    <div class="input-group">
+                        <div class="input-wrapper scale-effect">
+                            <div class="input-icon fa-mars"></div>
+                            <input type="text" id="father-quick-input" class="input-field"
+                                placeholder="请输入父亲的属性，用空格隔开(或直接粘贴计算结果)">
+                        </div>
+                        <div class="input-wrapper scale-effect">
+                            <div class="input-icon fa-venus"></div>
+                            <input type="text" id="mother-quick-input" class="input-field"
+                                placeholder="请输入母亲的属性，用空格隔开(或直接粘贴计算结果)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 父母属性区域 -->
+                <div class="parents-container">
+                    <!-- 父亲属性 -->
+                    <div class="parent-card">
+                        <h3 class="parent-title">
+                            <div class="parent-title-icon fa-mars"></div>父亲
+                        </h3>
+                        <div class="stats-grid">
+                            <div class="space-y-2">
+                                <div class="stat-item">
+                                    <span class="stat-label">预期寿命</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">鳞片厚度</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">耐力</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">吐息充能</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">吐息伤害</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">能量</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">力量</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">养分吸收</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">耐渴能力</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="stat-item">
+                                    <span class="stat-label">毒素抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">冲击抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">穿刺抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">火焰抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">冰霜抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">等离子抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">闪电抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">酸液抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">毒液抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item font-semibold">
+                                    <span class="stat-label text-accent">综合评分</span>
+                                    <input type="text" value="B"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent text-accent font-semibold">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 母亲属性 -->
+                    <div class="parent-card">
+                        <h3 class="parent-title text-accent-light">
+                            <div class="parent-title-icon fa-venus"></div>母亲
+                        </h3>
+                        <div class="stats-grid">
+                            <div class="space-y-2">
+                                <div class="stat-item">
+                                    <span class="stat-label">预期寿命</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">鳞片厚度</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">耐力</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">吐息充能</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">吐息伤害</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">能量</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">力量</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">养分吸收</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">耐渴能力</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="stat-item">
+                                    <span class="stat-label">毒素抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">冲击抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">穿刺抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">火焰抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">冰霜抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">等离子抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">闪电抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">酸液抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">毒液抗性</span>
+                                    <input type="text" value="B/d+"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item font-semibold">
+                                    <span class="stat-label text-accent-light">综合评分</span>
+                                    <input type="text" value="B"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent-light text-accent-light font-semibold">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 子代属性区域 -->
+                <div class="child-card">
+                    <h3 class="child-title">
+                        <div class="child-title-icon fa-child"></div>子代
+                    </h3>
+
+                    <div class="child-stats">
+                        <!-- 左侧属性 -->
+                        <div class="child-stats-group">
+                            <h4 class="child-stats-title">基因</h4>
+                            <div class="space-y-2">
+                                <div class="stat-item">
+                                    <span class="stat-label">预期寿命</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">鳞片厚度</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">耐力</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">吐息充能</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">吐息伤害</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">能量</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">力量</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">养分吸收</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">耐渴能力</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧属性 -->
+                        <div class="child-stats-group">
+                            <h4 class="child-stats-title">抗性</h4>
+                            <div class="space-y-2">
+                                <div class="stat-item">
+                                    <span class="stat-label">毒素抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">冲击抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">穿刺抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">火焰抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">冰霜抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">等离子抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">闪电抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">酸液抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">毒液抗性</span>
+                                    <input type="text"
+                                        class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 综合评分 -->
+                        <div class="child-stats-group rating-container">
+                            <h4 class="rating-title">血脉品质</h4>
+                            <div class="w-full flex flex-col items-center">
+                                <div class="rating-value-container">
+                                    <span class="stat-label">综合评分</span>
+                                    <div class="rating-value">
+                                        <input type="text" id="bloodline-rating" class="rating-input">
+                                        <div class="refresh-icon fa-refresh"></div>
+                                    </div>
+                                </div>
+                                <div class="rating-scale">
+                                    <div class="scale-labels">
+                                        <span>F</span>
+                                        <span>E</span>
+                                        <span>D</span>
+                                        <span>C</span>
+                                        <span>B</span>
+                                        <span>A</span>
+                                    </div>
+                                    <div class="scale-bar">
+                                        <div class="scale-progress" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 计算按钮 -->
+                <div class="text-center">
+                    <button id="calculate-btn" class="calculate-btn">
+                        <div class="btn-icon fa-calculator"></div>计算
+                    </button>
+                </div>
             </div>
         </div>
     </div>

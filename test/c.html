@@ -1,0 +1,875 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>龙属性计算器</title>
+    <style>
+        /* 基础样式变量 */
+        :root {
+            --dark: #1a1c23;
+            --darker: #121318;
+            --accent: #FF7A00;
+            --accent-light: #FF9D43;
+            --accent-dark: #E66E00;
+            --gray-light: #C0C8CF;
+            --gray-medium: #6B7280;
+            --gray-dark: #374151;
+            --glow: 0 0 15px rgba(255, 122, 0, 0.4);
+            --inner-glow: inset 0 0 10px rgba(255, 122, 0, 0.2);
+        }
+
+        /* 基础样式 */
+        body {
+            background-color: var(--darker);
+            color: var(--gray-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        /* 自定义工具类 */
+        .text-shadow {
+            text-shadow: 0 0 10px rgba(255, 122, 0, 0.5);
+        }
+
+        .bg-gradient {
+            background: linear-gradient(145deg, var(--dark), var(--darker));
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(255, 122, 0, 0.3);
+        }
+
+        /* 页面组件样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .header {
+            background-color: var(--dark);
+            border-bottom: 1px solid var(--gray-dark);
+            padding: 1rem 1.5rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .info {
+            color: var(--accent-light);
+            display: flex;
+            align-items: center;
+        }
+
+        .main {
+            flex-grow: 1;
+            padding: 2rem 0;
+        }
+
+        .notification {
+            background-color: var(--dark);
+            border: 1px solid rgba(255, 122, 0, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .notification-icon {
+            color: var(--accent);
+            margin-right: 0.75rem;
+        }
+
+        .calculator {
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border: 1px solid rgba(55, 65, 81, 0.5);
+        }
+
+        .quick-input {
+            margin-bottom: 2rem;
+        }
+
+        .quick-input-label {
+            color: var(--gray-medium);
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .input-group {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 0.75rem;
+            color: var(--accent);
+        }
+
+        .input-field {
+            width: 100%;
+            background-color: var(--dark);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+            border-radius: 0.5rem;
+            padding: 0.75rem 2.5rem;
+            color: var(--gray-light);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 0 0 2px rgba(255, 122, 0, 0.2);
+        }
+
+        .parents-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .parents-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .parent-card {
+            background-color: var(--dark);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 1.25rem;
+            border: 1px solid rgba(55, 65, 81, 0.3);
+        }
+
+        .parent-title {
+            color: var(--accent);
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .parent-title-icon {
+            margin-right: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+        }
+
+        .stat-input {
+            width: 4rem;
+            background-color: var(--darker);
+            border: 1px solid var(--gray-dark);
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--gray-light);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .stat-input:focus {
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+
+        .child-card {
+            background-color: var(--dark);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            border: 1px solid rgba(55, 65, 81, 0.3);
+            margin-bottom: 2rem;
+        }
+
+        .child-title {
+            color: var(--accent);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .child-title-icon {
+            margin-right: 0.5rem;
+        }
+
+        .child-stats {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .child-stats {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        .child-stats-group {
+            background-color: var(--darker);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 1px solid rgba(55, 65, 81, 0.3);
+        }
+
+        .child-stats-title {
+            color: var(--accent-light);
+            text-align: center;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .rating-container {
+            border: 1px solid rgba(255, 122, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rating-title {
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .rating-value-container {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-value {
+            position: relative;
+        }
+
+        .rating-input {
+            width: 6rem;
+            background-color: var(--dark);
+            border: 1px solid var(--accent);
+            border-radius: 0.25rem;
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--accent);
+            outline: none;
+        }
+
+        .refresh-icon {
+            position: absolute;
+            bottom: -0.25rem;
+            right: -0.25rem;
+            font-size: 0.75rem;
+            color: var(--gray-medium);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .refresh-icon:hover {
+            color: var(--accent);
+        }
+
+        .rating-scale {
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .scale-bar {
+            width: 100%;
+            background-color: var(--dark);
+            border-radius: 9999px;
+            height: 0.625rem;
+            overflow: hidden;
+        }
+
+        .scale-progress {
+            background: linear-gradient(90deg, var(--gray-dark), var(--accent), var(--accent-light));
+            height: 100%;
+            border-radius: 9999px;
+            width: 50%;
+        }
+
+        .calculate-btn {
+            background-color: var(--accent);
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calculate-btn:hover {
+            background-color: var(--accent-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-icon {
+            margin-right: 0.5rem;
+        }
+
+        .footer {
+            background-color: var(--dark);
+            border-top: 1px solid var(--gray-dark);
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--gray-medium);
+        }
+
+        .footer p {
+            margin: 0.5rem 0;
+        }
+
+        /* 自定义图标 */
+        .fa-dragon::before { content: "🐉"; }
+        .fa-mars::before { content: "♂"; }
+        .fa-venus::before { content: "♀"; }
+        .fa-info-circle::before { content: "ℹ"; }
+        .fa-check-circle::before { content: "✔"; }
+        .fa-calculator::before { content: "🔢"; }
+        .fa-spinner::before { content: "⟳"; }
+        .fa-check::before { content: "✓"; }
+        .fa-refresh::before { content: "🔄"; }
+        .fa-keyboard-o::before { content: "⌨"; }
+
+        /* 动画效果 */
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .scale-effect {
+            transition: transform 0.2s ease;
+        }
+
+        .scale-effect:focus-within {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面头部 -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <div class="logo-icon fa-dragon"></div>
+                <h1 class="logo-text">龙属性计算器</h1>
+            </div>
+            <div class="info">
+                <div class="fa-info-circle"></div>
+                <span class="ml-1">按i查看预测结果</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main container">
+        <!-- 通知栏 -->
+        <div class="notification card-hover">
+            <div class="notification-content">
+                <div class="notification-icon fa-check-circle"></div>
+                <p>综合评分bug已修复</p>
+            </div>
+        </div>
+
+        <!-- 计算器主体 -->
+        <div class="calculator bg-gradient">
+            <!-- 快速填入区域 -->
+            <div class="quick-input">
+                <p class="quick-input-label">
+                    快速填入数据(当均填入数据时以快速填入区域数据为准，支持仅一方填入数据)
+                </p>
+                <div class="input-group">
+                    <div class="input-wrapper scale-effect">
+                        <div class="input-icon fa-mars"></div>
+                        <input type="text" id="father-quick-input" class="input-field" placeholder="请输入父亲的属性，用空格隔开(或直接粘贴计算结果)">
+                    </div>
+                    <div class="input-wrapper scale-effect">
+                        <div class="input-icon fa-venus"></div>
+                        <input type="text" id="mother-quick-input" class="input-field" placeholder="请输入母亲的属性，用空格隔开(或直接粘贴计算结果)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 父母属性区域 -->
+            <div class="parents-container">
+                <!-- 父亲属性 -->
+                <div class="parent-card">
+                    <h3 class="parent-title">
+                        <div class="parent-title-icon fa-mars"></div>父亲
+                    </h3>
+                    <div class="stats-grid">
+                        <div class="space-y-2">
+                            <div class="stat-item">
+                                <span class="stat-label">预期寿命</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">鳞片厚度</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">耐力</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">吐息充能</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">吐息伤害</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">能量</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">力量</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">养分吸收</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">耐渴能力</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="stat-item">
+                                <span class="stat-label">毒素抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">冲击抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">穿刺抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">火焰抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">冰霜抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">等离子抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">闪电抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">酸液抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">毒液抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item font-semibold">
+                                <span class="stat-label text-accent">综合评分</span>
+                                <input type="text" value="B" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent text-accent font-semibold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 母亲属性 -->
+                <div class="parent-card">
+                    <h3 class="parent-title text-accent-light">
+                        <div class="parent-title-icon fa-venus"></div>母亲
+                    </h3>
+                    <div class="stats-grid">
+                        <div class="space-y-2">
+                            <div class="stat-item">
+                                <span class="stat-label">预期寿命</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">鳞片厚度</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">耐力</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">吐息充能</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">吐息伤害</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">能量</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">力量</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">养分吸收</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">耐渴能力</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="stat-item">
+                                <span class="stat-label">毒素抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">冲击抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">穿刺抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">火焰抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">冰霜抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">等离子抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">闪电抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">酸液抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">毒液抗性</span>
+                                <input type="text" value="B/d+" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item font-semibold">
+                                <span class="stat-label text-accent-light">综合评分</span>
+                                <input type="text" value="B" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent-light text-accent-light font-semibold">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 子代属性区域 -->
+            <div class="child-card">
+                <h3 class="child-title">
+                    <div class="child-title-icon fa-child"></div>子代
+                </h3>
+                
+                <div class="child-stats">
+                    <!-- 左侧属性 -->
+                    <div class="child-stats-group">
+                        <h4 class="child-stats-title">基因</h4>
+                        <div class="space-y-2">
+                            <div class="stat-item">
+                                <span class="stat-label">预期寿命</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">鳞片厚度</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">耐力</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">吐息充能</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">吐息伤害</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">能量</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">力量</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">养分吸收</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">耐渴能力</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧属性 -->
+                    <div class="child-stats-group">
+                        <h4 class="child-stats-title">抗性</h4>
+                        <div class="space-y-2">
+                            <div class="stat-item">
+                                <span class="stat-label">毒素抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">冲击抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">穿刺抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">火焰抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">冰霜抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">等离子抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">闪电抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">酸液抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">毒液抗性</span>
+                                <input type="text" class="stat-input focus:outline-none focus:ring-1 focus:ring-accent">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 综合评分 -->
+                    <div class="child-stats-group rating-container">
+                        <h4 class="rating-title">血脉品质</h4>
+                        <div class="w-full flex flex-col items-center">
+                            <div class="rating-value-container">
+                                <span class="stat-label">综合评分</span>
+                                <div class="rating-value">
+                                    <input type="text" id="bloodline-rating" class="rating-input">
+                                    <div class="refresh-icon fa-refresh"></div>
+                                </div>
+                            </div>
+                            <div class="rating-scale">
+                                <div class="scale-labels">
+                                    <span>D</span>
+                                    <span>E</span>
+                                    <span>C</span>
+                                    <span>B</span>
+                                    <span>A</span>
+                                    <span>F</span>
+                                </div>
+                                <div class="scale-bar">
+                                    <div class="scale-progress" style="width: 50%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 计算按钮 -->
+            <div class="text-center">
+                <button id="calculate-btn" class="calculate-btn">
+                    <div class="btn-icon fa-calculator"></div>计算
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>龙属性计算器 © 2025</p>
+            <p class="mt-2">按<span class="fa-keyboard-o text-accent"></span> i 查看详细预测结果</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 为计算按钮添加悬停动画效果
+        document.getElementById('calculate-btn').addEventListener('mouseenter', function() {
+            this.classList.add('animate-pulse');
+        });
+        
+        document.getElementById('calculate-btn').addEventListener('mouseleave', function() {
+            this.classList.remove('animate-pulse');
+        });
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'i' || e.key === 'I') {
+                alert('显示详细预测结果功能尚未实现');
+            }
+        });
+        
+        // 模拟计算按钮点击效果
+        document.getElementById('calculate-btn').addEventListener('click', function() {
+            this.innerHTML = '<div class="btn-icon fa-spinner fa-spin"></div>计算中...';
+            
+            // 模拟计算过程
+            setTimeout(() => {
+                this.innerHTML = '<div class="btn-icon fa-check"></div>计算完成';
+                
+                // 随机填充子代属性值
+                const childInputs = document.querySelectorAll('.child-stats-group input');
+                // 去掉S，增加E和F
+                const ratings = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'E+', 'E', 'E-', 'F'];
+                
+                childInputs.forEach(input => {
+                    if (input.id !== 'bloodline-rating') {
+                        input.value = ratings[Math.floor(Math.random() * ratings.length)];
+                    }
+                });
+                
+                // 设置血脉评分
+                document.getElementById('bloodline-rating').value = 'B';
+                
+                // 更新评分条
+                const progressBar = document.querySelector('.scale-progress');
+                // 评分B对应位置，根据新的评分体系调整
+                progressBar.style.width = '50%';
+                
+                // 重置按钮文本
+                setTimeout(() => {
+                    this.innerHTML = '<div class="btn-icon fa-calculator"></div>计算';
+                }, 1500);
+            }, 1000);
+        });
+        
+        // 为评分刷新按钮添加点击事件
+        document.querySelector('.fa-refresh').addEventListener('click', function() {
+            // 去掉S，增加E和F
+            const ratings = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'E+', 'E', 'E-', 'F'];
+            const ratingInput = document.getElementById('bloodline-rating');
+            ratingInput.value = ratings[Math.floor(Math.random() * ratings.length)];
+            
+            // 更新评分条
+            const progressBar = document.querySelector('.scale-progress');
+            // 根据新的评分体系调整位置
+            const newWidth = (ratings.indexOf(ratingInput.value) / (ratings.length - 1)) * 100;
+            progressBar.style.width = `${newWidth}%`;
+        });
+    </script>
+
+
+    </body></html>
