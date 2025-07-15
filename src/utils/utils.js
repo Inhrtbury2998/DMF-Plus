@@ -1,3 +1,10 @@
+
+/*
+1.Qmsg来自message.js库
+2.一些在主要代码中需要用到的方法或变量
+*/
+const DEBUG = true;
+
 /**
  * 简繁转换工具（仅常用字，支持页面整体转换）
  * 依赖简繁映射表，可根据需要扩展
@@ -44,12 +51,6 @@ function traverseAndConvert(node, convertFunc) {
         }
     }
 }
-
-/*
-1.Qmsg来自message.js库
-2.一些在主要代码中需要用到的方法或变量
-*/
-const DEBUG = true;
 
 /**
  * 转换坐标点数组

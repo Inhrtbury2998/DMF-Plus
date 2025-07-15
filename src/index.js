@@ -52,7 +52,7 @@ $(document).ready(function () {
 
                 // 为起点下拉框添加选项
                 const $startItem = $('<div class="dropdown-item" data-id="' + location.id + '">' + location.name + '</div>');
-                $startItem.on('click', function() {
+                $startItem.on('click', function () {
                     // 设置起点坐标
                     $('#y1').val(location.lie[0]);
                     $('#x1').val(location.lie[1]);
@@ -65,7 +65,7 @@ $(document).ready(function () {
 
                 // 为终点下拉框添加选项
                 const $endItem = $('<div class="dropdown-item" data-id="' + location.id + '">' + location.name + '</div>');
-                $endItem.on('click', function() {
+                $endItem.on('click', function () {
                     // 设置终点坐标
                     $('#y2').val(location.lie[0]);
                     $('#x2').val(location.lie[1]);
@@ -79,7 +79,7 @@ $(document).ready(function () {
         }
 
         // 下拉框切换逻辑
-        $('.dropdown-button').on('click', function(e) {
+        $('.dropdown-button').on('click', function (e) {
             e.stopPropagation();
             const $content = $(this).siblings('.dropdown-content');
 
@@ -102,7 +102,7 @@ $(document).ready(function () {
         });
 
         // 点击页面其他位置关闭下拉框
-        $(document).on('click', function() {
+        $(document).on('click', function () {
             $('.dropdown-content').removeClass('show');
             $('.dropdown-button').removeClass('dropdown-open');
         });
@@ -151,7 +151,7 @@ $(document).ready(function () {
         let x2 = $('#x2').val();
         let y2 = $('#y2').val();
         // 检查输入是否有效
-        if (!(isValidCoordinateString(y1) && isValidCoordinateString(y2) 
+        if (!(isValidCoordinateString(y1) && isValidCoordinateString(y2)
             && isValidCoordinateString(x1) && isValidCoordinateString(x2))) {
             Qmsg.error('请输入正确的数据');
             return;
@@ -206,77 +206,103 @@ $(document).ready(function () {
             });
         });
 
-         // 地图点击获取坐标并标记
-    let clickState = 0; // 0:未选，1:已选起点，2:已选终点
-    let startMarker = null, endMarker = null;
-    let startCoord = null, endCoord = null;
+        // 地图点击获取坐标并标记
+        let clickState = 0; // 0:未选，1:已选起点，2:已选终点
+        let startMarker = null, endMarker = null;
+        let startCoord = null, endCoord = null;
 
-    $('.imgSmallSpan').off('click').on('click', function (e) {
-        // 获取点击坐标相对于图像容器的位置
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        $('.imgSmallSpan').off('click').on('click', function (e) {
+            // 获取点击坐标相对于图像容器的位置
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
-        // 获取canvas实际显示尺寸和原始像素尺寸的缩放比例
-        const canvas = $(this).find('canvas')[0];
-        if (!canvas) return;
+            // 获取canvas实际显示尺寸和原始像素尺寸的缩放比例
+            const canvas = $(this).find('canvas')[0];
+            if (!canvas) return;
 
-        const mapWidth = canvas.width;  // 原始宽度
-        const mapHeight = canvas.height; // 原始高度
-        const displayWidth = $(canvas).width();  // 显示宽度
-        const displayHeight = $(canvas).height(); // 显示高度
+            const mapWidth = canvas.width;  // 原始宽度
+            const mapHeight = canvas.height; // 原始高度
+            const displayWidth = $(canvas).width();  // 显示宽度
+            const displayHeight = $(canvas).height(); // 显示高度
 
-        // 计算实际坐标（考虑缩放）
-        const scaleX = mapWidth / displayWidth;
-        const scaleY = mapHeight / displayHeight;
-        const px = x * scaleX;
-        const py = y * scaleY;
+            // 计算实际坐标（考虑缩放）
+            const scaleX = mapWidth / displayWidth;
+            const scaleY = mapHeight / displayHeight;
+            const px = x * scaleX;
+            const py = y * scaleY;
 
-        // 转换为逻辑坐标
-        const coord = pixelToLogic(px, py, mapWidth, mapHeight);
+            // 转换为逻辑坐标
+            const coord = pixelToLogic(px, py, mapWidth, mapHeight);
 
-        // 根据当前状态更新UI
-        // 点击地图时的起点和终点小圆
-        if (clickState === 0) {
-            // 设置起点
-            startCoord = coord;
-            $('#y1').val(coord.y);
-            $('#x1').val(coord.x);
-            if (startMarker) startMarker.remove();
-            startMarker = $('<div class="map-marker start-marker"></div>');
-            startMarker.css({
-                left: x - 7 + 'px',
-                top: y - 7 + 'px'
-            });
-            $(this).append(startMarker);
-            clickState = 1;
-        } else if (clickState === 1) {
-            // 设置终点
-            endCoord = coord;
-            $('#y2').val(coord.y);
-            $('#x2').val(coord.x);
-            if (endMarker) endMarker.remove();
-            endMarker = $('<div class="map-marker end-marker"></div>');
-            endMarker.css({
-                left: x - 7 + 'px',
-                top: y - 7 + 'px'
-            });
-            $(this).append(endMarker);
-            clickState = 2;
-        } else {
-            // 重置
-            if (startMarker) startMarker.remove();
-            if (endMarker) endMarker.remove();
-            startMarker = null;
-            endMarker = null;
-            startCoord = null;
-            endCoord = null;
-            clickState = 0;
-            $('#y1').val('');
-            $('#x1').val('');
-            $('#y2').val('');
-            $('#x2').val('');
-        }
-    });
+            // 根据当前状态更新UI
+            // 点击地图时的起点和终点小圆
+            if (clickState === 0) {
+                // 设置起点
+                startCoord = coord;
+                $('#y1').val(coord.y);
+                $('#x1').val(coord.x);
+                if (startMarker) startMarker.remove();
+                startMarker = $('<div class="map-marker start-marker"></div>');
+                startMarker.css({
+                    left: x - 7 + 'px',
+                    top: y - 7 + 'px'
+                });
+                $(this).append(startMarker);
+                clickState = 1;
+            } else if (clickState === 1) {
+                // 设置终点
+                endCoord = coord;
+                $('#y2').val(coord.y);
+                $('#x2').val(coord.x);
+                if (endMarker) endMarker.remove();
+                endMarker = $('<div class="map-marker end-marker"></div>');
+                endMarker.css({
+                    left: x - 7 + 'px',
+                    top: y - 7 + 'px'
+                });
+                $(this).append(endMarker);
+                clickState = 2;
+            } else {
+                // 重置
+                if (startMarker) startMarker.remove();
+                if (endMarker) endMarker.remove();
+                startMarker = null;
+                endMarker = null;
+                startCoord = null;
+                endCoord = null;
+                clickState = 0;
+                $('#y1').val('');
+                $('#x1').val('');
+                $('#y2').val('');
+                $('#x2').val('');
+            }
+        });
     }).catch(error => Qmsg.error('地图图片加载失败: ' + error));
+    
+    $("#calculate-btn").on('click', function () {// 初始化父亲和母亲的属性数组
+        let fatherAttributes = [];
+        let motherAttributes = [];
+        // 获取父亲属性
+        if ($.trim($('#father-quick-input').val()) === '') {
+            $('.parent-card:first .stat-input').each(function () {
+                fatherAttributes.push($(this).val());
+            });
+        }else {
+            fatherAttributes = $('#father-quick-input').val().split(' ');
+        }
+        // 获取母亲属性
+        if ($.trim($('#mother-quick-input').val()) === '') {
+            $('.parent-card:last .stat-input').each(function () {
+                motherAttributes.push($(this).val());
+            });
+        }else {
+            motherAttributes = $('#mother-quick-input').val().split(' ');
+        }
+        if (fatherAttributes.length !== 19 || motherAttributes.length !== 19 || fatherAttributes.some(str => str.trim() === '') || motherAttributes.some(str => str.trim() === '')) {
+            Qmsg.error('父亲或母亲属性输入有误，请检查');
+            return;
+        }
+        console.log(fatherAttributes, motherAttributes);
+    });
 });
