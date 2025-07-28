@@ -279,30 +279,38 @@ $(document).ready(function () {
             }
         });
     }).catch(error => Qmsg.error('地图图片加载失败: ' + error));
-    
-    $("#calculate-btn").on('click', function () {// 初始化父亲和母亲的属性数组
+
+    $("#calculate-btn").on('click', function () {// 遗传属性计算
         let fatherAttributes = [];
         let motherAttributes = [];
         // 获取父亲属性
         if ($.trim($('#father-quick-input').val()) === '') {
             $('.parent-card:first .stat-input').each(function () {
-                fatherAttributes.push($(this).val());
+                fatherAttributes.push($(this).val().toLowerCase());
             });
-        }else {
-            fatherAttributes = $('#father-quick-input').val().split(' ');
+        } else {
+            fatherAttributes = $('#father-quick-input').val().toLowerCase().split(' ');
         }
         // 获取母亲属性
         if ($.trim($('#mother-quick-input').val()) === '') {
             $('.parent-card:last .stat-input').each(function () {
-                motherAttributes.push($(this).val());
+                motherAttributes.push($(this).val().toLowerCase());
             });
-        }else {
-            motherAttributes = $('#mother-quick-input').val().split(' ');
+        } else {
+            motherAttributes = $('#mother-quick-input').val().toLowerCase().split(' ');
         }
-        if (fatherAttributes.length !== 19 || motherAttributes.length !== 19 || fatherAttributes.some(str => str.trim() === '') || motherAttributes.some(str => str.trim() === '')) {
+        // 检查属性数量和格式
+        if (fatherAttributes.length !== 19 || motherAttributes.length !== 19 ||
+            fatherAttributes.some(str => str.trim() === '') || motherAttributes.some(str => str.trim() === '')) {
             Qmsg.error('父亲或母亲属性输入有误，请检查');
             return;
         }
-        console.log(fatherAttributes, motherAttributes);
+        if (DEBUG) { console.log('父亲属性:', fatherAttributes, '母亲属性:', motherAttributes); }
+        // 处理父亲和母亲的属性为数字
+        fatherAttributes = attributesToNumber(fatherAttributes);
+        motherAttributes = attributesToNumber(motherAttributes);
+        if (DEBUG) { console.log('处理后的父亲属性:', fatherAttributes, '处理后的母亲属性:', motherAttributes); }
+
+        
     });
 });

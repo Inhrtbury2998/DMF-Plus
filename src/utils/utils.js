@@ -13,6 +13,13 @@ const zh_s2t_map = {
     "龙": "龍", "辅助": "輔助", "设置": "設置", "帮助": "幫助", "教程": "教程", "地图": "地圖", "宽度": "寬度", "高度": "高度", "起点": "起點", "终点": "終點", "坐标": "座標", "计算": "計算", "距离": "距離", "方向": "方向", "重置": "重置", "保存": "保存", "刷新": "刷新", "图片": "圖片", "裁剪": "裁剪", "异常": "異常", "粘贴板": "剪貼板", "更多": "更多", "功能": "功能", "快速": "快速", "新增": "新增", "开关": "開關", "主界面": "主界面", "自动": "自動", "复制": "複製", "结果": "結果", "失败": "失敗", "成功": "成功", "显示": "顯示", "输入": "輸入", "数据": "數據", "刷新": "刷新", "点": "點", "南": "南", "北": "北", "西": "西", "东": "東"
     // 可继续补充常用字
 };
+// 遗传属性计算的映射表
+const letterToNumberMap = {
+    "f": 0, "e": 1, "d-": 2, "d": 3, "d+": 4,
+    "c-": 5, "c": 6, "c+": 7,
+    "b-": 8, "b": 9, "b+": 10,
+    "a-": 11, "a": 12
+};
 
 function zh_s2t(str) {
     return str.replace(/[\u4e00-\u9fa5]/g, function (char) {
@@ -60,21 +67,21 @@ function traverseAndConvert(node, convertFunc) {
  * @returns {number[][]} 转换后的经纬度数组
  */
 function convertCoordinates(pointArray) {
-return pointArray.map(function(point) {
-        return point.map(function(coord) {
+    return pointArray.map(function (point) {
+        return point.map(function (coord) {
             // 如果已经是数字，直接返回
             if (typeof coord === 'number') {
                 return coord;
             }
-            
+
             // 转为字符串处理
             const str = String(coord).trim();
             const lastChar = str.slice(-1).toLowerCase();
-            
+
             // 检查最后一个字符是否是方向标识
             if (/[nsew]/.test(lastChar)) {
                 const numPart = parseFloat(str.slice(0, -1));
-                switch(lastChar) {
+                switch (lastChar) {
                     case 's': // 南纬为负
                     case 'w': // 西经为负
                         return -numPart;
@@ -83,7 +90,7 @@ return pointArray.map(function(point) {
                         return numPart;
                 }
             }
-            
+
             // 没有方向标识，直接转为数字
             return parseFloat(str);
         });
@@ -255,29 +262,61 @@ function copyCanvas(sourceCanvas) {
     return targetCanvas;
 }
 
-    const mapLogicWidth = 1500; // 地图逻辑坐标宽度（根据地图实际标注调整）
-    const mapLogicHeight = 1500; // 地图逻辑坐标高度（根据地图实际标注调整）
+const mapLogicWidth = 1500; // 地图逻辑坐标宽度（根据地图实际标注调整）
+const mapLogicHeight = 1500; // 地图逻辑坐标高度（根据地图实际标注调整）
 
-    /**
-     * 将像素坐标转换为逻辑坐标。
-     * 
-     * @param {number} x - 像素坐标的 x 值。
-     * @param {number} y - 像素坐标的 y 值。
-     * @param {number} mapWidth - 地图的像素宽度。
-     * @param {number} mapHeight - 地图的像素高度。
-     * @returns {Object} 包含逻辑坐标的对象，格式为 { x: 'xValxDir', y: 'yValyDir' }，
-     *                   其中 xVal 和 yVal 是逻辑坐标的绝对值（保留一位小数），
-     *                   xDir 和 yDir 是方向后缀（'w' 代表西，'e' 代表东，'n' 代表北，'s' 代表南）。
-     */
-    function pixelToLogic(x, y, mapWidth, mapHeight) {
-        // 像素坐标转逻辑坐标，左上为(0,0)
-        // 逻辑坐标x:东西，y:南北
-        let logicX = (x / mapWidth) * mapLogicWidth;
-        let logicY = (y / mapHeight) * mapLogicHeight;
-        // 方向后缀，地图上北下南左西右东
-        let xDir = logicX < mapLogicWidth / 2 ? 'w' : 'e';
-        let yDir = logicY < mapLogicHeight / 2 ? 'n' : 's';
-        let xVal = Math.abs(logicX - mapLogicWidth / 2).toFixed(1);
-        let yVal = Math.abs(logicY - mapLogicHeight / 2).toFixed(1);
-        return { x: xVal + xDir, y: yVal + yDir };
+/**
+ * 将像素坐标转换为逻辑坐标。
+ * 
+ * @param {number} x - 像素坐标的 x 值。
+ * @param {number} y - 像素坐标的 y 值。
+ * @param {number} mapWidth - 地图的像素宽度。
+ * @param {number} mapHeight - 地图的像素高度。
+ * @returns {Object} 包含逻辑坐标的对象，格式为 { x: 'xValxDir', y: 'yValyDir' }，
+ *                   其中 xVal 和 yVal 是逻辑坐标的绝对值（保留一位小数），
+ *                   xDir 和 yDir 是方向后缀（'w' 代表西，'e' 代表东，'n' 代表北，'s' 代表南）。
+ */
+function pixelToLogic(x, y, mapWidth, mapHeight) {
+    // 像素坐标转逻辑坐标，左上为(0,0)
+    // 逻辑坐标x:东西，y:南北
+    let logicX = (x / mapWidth) * mapLogicWidth;
+    let logicY = (y / mapHeight) * mapLogicHeight;
+    // 方向后缀，地图上北下南左西右东
+    let xDir = logicX < mapLogicWidth / 2 ? 'w' : 'e';
+    let yDir = logicY < mapLogicHeight / 2 ? 'n' : 's';
+    let xVal = Math.abs(logicX - mapLogicWidth / 2).toFixed(1);
+    let yVal = Math.abs(logicY - mapLogicHeight / 2).toFixed(1);
+    return { x: xVal + xDir, y: yVal + yDir };
+}
+
+/**
+ * 将单个字母转换为对应的数字。
+ * 
+ * @param {string} letter - 需要转换的字母。
+ * @returns {number} 返回与输入字母对应的数字。
+ * @throws {Error} 如果输入的字母不在映射表中，则抛出错误。
+ */
+function letterToNumber(letter) {
+    // 判断映射表中是否存在该字母
+    if (letterToNumberMap.hasOwnProperty(letter)) {
+        // 如果存在，返回对应的数字
+        return letterToNumberMap[letter];
+    } else {
+        // 如果不存在，抛出错误
+        throw new Error("Invalid input: " + letter);
     }
+}
+
+/**
+ * 将属性数组中的每个子属性转换为对应的数字。
+ * 
+ * @param {string[]} attributeArray - 包含子属性的字符串数组。
+ * @returns {number[][]} 返回一个新的二维数组，其中每个子属性都被转换为对应的数字。
+ */
+function attributesToNumber(attributeArray) {
+    // 使用map方法遍历属性数组
+    return attributeArray.map(element => {
+        // 将字符串拆分为数组，并将每个子属性转换为数字
+        return element.split('/').map(subAttr => letterToNumber(subAttr));
+    });
+}
